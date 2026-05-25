@@ -4,6 +4,9 @@
   "private": true,
   "description": "AI-Powered Content Summarizer",
   "packageManager": "npm@9",
+  "engines": {
+    "node": "24.x"
+  },
   "workspaces": [
     "client",
     "server"
