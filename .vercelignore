@@ -1,0 +1,11 @@
+# Don't deploy these files
+.git
+.gitignore
+README.md
+.env
+.env.example
+.DS_Store
+node_modules
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*

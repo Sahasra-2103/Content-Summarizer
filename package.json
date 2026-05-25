@@ -1,0 +1,21 @@
+{
+  "name": "ai-powered-content-summarizer",
+  "version": "1.0.0",
+  "private": true,
+  "description": "AI-Powered Content Summarizer",
+  "packageManager": "npm@9",
+  "workspaces": [
+    "client",
+    "server"
+  ],
+  "scripts": {
+    "start": "node server/index.js",
+    "dev": "concurrently \"npm run dev --prefix server\" \"npm run dev --prefix client\"",
+    "install-all": "npm install && npm install --prefix server && npm install --prefix client",
+    "build": "npm run build --prefix client",
+    "vercel-build": "npm run build --prefix client"
+  },
+  "dependencies": {
+    "concurrently": "^8.2.2"
+  }
+}
