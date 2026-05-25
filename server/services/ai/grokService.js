@@ -2,16 +2,22 @@ const axios = require('axios');
 const { generateSystemPrompt, generateUserPrompt } = require('./promptService');
 
 const summarizeContent = async (content, summaryType, summaryLength, customInstruction) => {
+  let apiKey;
+  let apiUrl;
+  let model;
+
   try {
-    const apiKey = process.env.GROK_API_KEY;
+    apiKey = process.env.GROK_API_KEY;
     
     // Auto-detect if user accidentally provided a Groq key instead of Grok (xAI)
     const isGroqKey = apiKey && apiKey.startsWith('gsk_');
-    const apiUrl = isGroqKey ? 'https://api.groq.com/openai/v1/chat/completions' : 'https://api.x.ai/v1/chat/completions';
-    const model = isGroqKey ? 'llama-3.3-70b-versatile' : (process.env.GROK_MODEL || 'grok-beta');
+    apiUrl = isGroqKey ? 'https://api.groq.com/openai/v1/chat/completions' : 'https://api.x.ai/v1/chat/completions';
+    model = isGroqKey ? 'llama-3.3-70b-versatile' : (process.env.GROK_MODEL || 'grok-4');
 
     if (!apiKey) {
-      throw new Error('GROK_API_KEY is missing');
+      const missingKeyError = new Error('GROK_API_KEY is missing. Add it in Vercel Project Settings > Environment Variables.');
+      missingKeyError.statusCode = 500;
+      throw missingKeyError;
     }
 
     const systemPrompt = generateSystemPrompt();
@@ -62,7 +68,14 @@ const summarizeContent = async (content, summaryType, summaryLength, customInstr
       model: model,
       hasApiKey: !!apiKey
     });
-    throw new Error('Failed to generate summary with AI Provider');
+
+    if (error.statusCode) {
+      throw error;
+    }
+
+    const providerError = new Error(error.response?.data?.error?.message || 'Failed to generate summary with AI Provider');
+    providerError.statusCode = error.response?.status || 500;
+    throw providerError;
   }
 };
 

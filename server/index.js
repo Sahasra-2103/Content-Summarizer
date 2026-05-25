@@ -31,9 +31,9 @@ app.get('/', (req, res) => {
 // Global error handler
 app.use((err, req, res, next) => {
   console.error(err.stack);
-  res.status(500).json({
+  res.status(err.statusCode || 500).json({
     success: false,
-    message: 'An internal server error occurred',
+    message: err.message || 'An internal server error occurred',
     error: process.env.NODE_ENV === 'development' ? err.message : undefined,
   });
 });
